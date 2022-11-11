@@ -1,0 +1,21 @@
+.modal-wrapper {
+    width: 80%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+    max-width: 400px;
+    outline: none;
+    background-color: white;
+    @media only screen and (max-width: theme.$screen-sm-max) {
+      width: 80%;
+    }
+}
+
+  .course-modal{
+    width: 60% !important;
+    max-width: none !important;
+    top: 15% !important;
+    transform: translate(-50%,0) !important;
+  }
