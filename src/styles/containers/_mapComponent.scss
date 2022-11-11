@@ -1,0 +1,27 @@
+.map-container {
+    display: grid;
+    grid-template-columns: 25% 75%;
+
+
+    &__left {
+        // width: 100%;
+        width: auto;
+        height: 100%;
+        padding: 20px;
+
+        &--select {
+            margin: 0px auto 20px;
+            display: block;
+            color:black;
+        }
+    }
+
+    &__right {
+        height: 100vh;
+        width: 100%;
+    }
+}
+
+.plot {
+    margin: auto
+}

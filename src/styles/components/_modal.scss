@@ -1,11 +1,15 @@
+@use  '../library' as theme;
+
 .modal-wrapper {
     width: 80%;
+    height: 80vh;
     position: absolute;
     top: 50%;
     left: 50%;
-
+    padding: 20px;
     transform: translate(-50%, -50%);
-    max-width: 400px;
+    max-width: 900px;
+    border-radius: 5px;
     outline: none;
     background-color: white;
     @media only screen and (max-width: theme.$screen-sm-max) {

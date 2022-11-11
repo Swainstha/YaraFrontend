@@ -8,7 +8,7 @@ import LatestMeasurements from './containers/LatestMeasurements';
 import VisualizeMeasurements from './containers/VisualizeMeasurements';
 import MapComponent from './containers/MapComponent';
 import Test from './containers/Test'
-
+import "./styles/App.scss"
 const  App = () => {
   return(<div>
     <MapComponent />

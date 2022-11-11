@@ -1,12 +1,12 @@
 //import axios from "../utils/axios";
 import axios from 'axios';
+import { Moment } from 'moment';
 const headers =  {
     'Content-Type': 'application/json',
   }
-export const getMeasurements = (country: string, city: string, location: string, parameter: string) => {
+export const getMeasurements = (country: string, city: string, location: string, parameter: string, startDate: Moment|null, endDate: Moment|null, selectedLimit: string) => {
     const url = 'https://api.openaq.org/v2/measurements';
-    
-    return axios.get(`${url}?date_from=2021-07-21T00%3A00%3A00%2B00%3A00&date_to=2022-09-28T23%3A00%3A00%2B00%3A00&limit=500&page=1&offset=0&sort=desc&parameter=${parameter}&radius=10&country_id=${country}&city=${city}&location_id=${location}&order_by=datetime`, {headers: headers})
+    return axios.get(`${url}?date_from=${startDate?.toISOString()}&date_to=${endDate?.toISOString()}&limit=${selectedLimit}&page=1&offset=0&sort=desc&parameter=${parameter}&radius=10&country_id=${country}&city=${city}&location_id=${location}&order_by=datetime`, {headers: headers})
 }
 
 export const getLatestMeasurements = (city:string, parameter: string) => {

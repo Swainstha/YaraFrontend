@@ -1,56 +1,162 @@
-import React from 'react';
-import {getMeasurements, getCitiesByCountry, getLatestMeasurements, getLocationsByCity} from '../store/openaq';
+import React from "react";
+import {
+  getMeasurements,
+} from "../store/openaq";
 
-import {useEffect, useState,useLayoutEffect} from 'react'
-import Bargraph from '../components/Bargraph';
-import TimeSeriesgraph from '../components/TimeSeriesGraph';
-import Histogram from '../components/Histogram';
+import { useEffect, useState, useLayoutEffect } from "react";
+import Bargraph from "../components/Bargraph";
+import TimeSeriesgraph from "../components/TimeSeriesGraph";
+import Histogram from "../components/Histogram";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
+import { MenuItem, FormLabel, Button, FormControl, InputLabel } from "@mui/material";
+//import { Dayjs } from 'dayjs';
+import TextField from '@mui/material/TextField';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
+import moment, {Moment} from 'moment';
+const VisualizeMeasurements: React.FC<{
+  city: string | null;
+  location: any;
+}> = (props) => {
 
-const VisualizeMeasurements:React.FC<{city: string|null, location: string|null}> = (props) => {
-  const parameters:string[] = ["pm10","pm25","o3","co","no2","so2"];
+  const [startDate, setStartDate] = React.useState<Moment | null>(null);
+  const [endDate, setEndDate] = React.useState<Moment | null>(null);
+  const [parameters, setParameters]= useState<string[]>([]);
+  const limits: string[] = ["100", "200", "500", "1000"];
   const [graphData, setGraphData] = useState<any>(null);
-  const [selectedParameter, setSelectedParameter] = useState<string>(parameters[0]);
+  const [selectedParameter, setSelectedParameter] = useState<string>();
   const [measurements, setMeasurements] = useState<any>(null);
+  const [selectedLimit, setSelectedLimit] = useState<string>("100");
 
   useEffect(() => {
-    if(selectedParameter && props.city && props.location) {
-        getMeasurements('DE', props.city, props.location, selectedParameter).then(response => {
-            if(response && response.data) {
-                setMeasurements(response.data.results)
-            }
-        })
+    if(props.location && Array.isArray(props.location.parameters)) {
+      const params:string[] = [];
+      props.location.parameters.map((param: any) => {
+        params.push(param.parameter)
+      })
+      setParameters(params);
+      if(params.length > 0) {
+        setSelectedParameter(params[0]);
+      }
     }
-  },[selectedParameter, props.location, props.city])
+  },[props.location]);
+  useEffect(() => {
+    if (selectedParameter && props.city && props.location && startDate && selectedLimit) {
+      let end_date = moment(Date.now());
+      if(endDate ) {
+        end_date = endDate;
+      }
+      getMeasurements("DE", props.city, props.location.id, selectedParameter, startDate, end_date, selectedLimit).then(
+        (response) => {
+          if (response && response.data) {
+            setMeasurements(response.data.results);
+          }
+        }
+      );
+    }
+  }, [selectedParameter, startDate, endDate, selectedLimit]);
 
   useEffect(() => {
-    if(measurements && Array.isArray(measurements)) {
-        const xData:any[] = [];
-        const yData:any[] = [];
-        measurements.map((data:any) => {
-            xData.push(data.date.local)
-            yData.push(data.value)
-        })
-        console.log(xData)
-        setGraphData({x: xData, y: yData});
+    if (measurements && Array.isArray(measurements)) {
+      const xData: any[] = [];
+      const yData: any[] = [];
+      measurements.map((data: any) => {
+        xData.push(data.date.local);
+        yData.push(data.value);
+      });
+      //console.log(xData);
+      setGraphData({ x: xData, y: yData });
     }
-  },[measurements])
+  }, [measurements]);
 
-  const selectParameter = (event: any) => {
-    setSelectedParameter(event.target.value)
+  const selectParameter = (event: SelectChangeEvent) => {
+    setSelectedParameter(event.target.value);
+  };
+
+  const selectLimit = (event: SelectChangeEvent) => {
+    setSelectedLimit(event.target.value)
   }
 
-
   return (
-    
     <>
-        <select id="cars" onChange={selectParameter}>
-        {parameters && parameters.map(param => {
-          return <option key={param} value={param}>{param}</option>
-        })}
-        </select>
-        <Histogram data={graphData}/>
+    <div className="param-container">
+      <p>City: {props.city}</p>
+      <p>Location: {props.location?.name}</p>
+    </div>
+    <div className="param-container">
+      <FormControl>
+        <InputLabel id="demo-simple-select-label">Parameter</InputLabel>
+          <Select
+            id="parameters"
+            value={selectedParameter}
+            label="Parameters"
+            onChange={selectParameter}
+            size="small"
+            className="map-container__left--select"
+            style={{width: '100px'}}
+          >
+          {parameters &&
+            parameters.map((param) => {
+              return (
+                <MenuItem key={param} value={param}>
+                  {param.toUpperCase()}
+                </MenuItem>
+              );
+            })}
+          </Select>  
+        </FormControl>
+        <LocalizationProvider dateAdapter={AdapterMoment}>
+          <DatePicker
+            
+            label="Start Date"
+            value={startDate}
+            maxDate = {moment(Date.now())}
+            onChange={(newValue) => {
+              setStartDate(newValue);
+            }}
+            renderInput={(params) => <TextField size="small" {...params} />}
+          />
+          <DatePicker
+            label="End Date"
+            value={endDate}
+            maxDate = {moment(Date.now())}
+            onChange={(newValue) => {
+              setEndDate(newValue);
+            }}
+            renderInput={(params) => <TextField size="small" {...params} />}
+          />
+        </LocalizationProvider>
+        <FormControl>
+        <InputLabel id="demo-simple-select-label">Limits</InputLabel>
+          <Select
+            id="limits"
+            value={selectedLimit}
+            label="Limits"
+            onChange={selectLimit}
+            size="small"
+            className="map-container__left--select"
+            style={{width: '100px'}}
+          >
+          {limits &&
+            limits.map((limit) => {
+              return (
+                <MenuItem key={limit} value={limit}>
+                  {limit}
+                </MenuItem>
+              );
+            })}
+          </Select>  
+        </FormControl>
+            
+        
+      </div>
+      <div style={{marginTop: '20px'}}>
+        <TimeSeriesgraph data={graphData} />
+      </div>
     </>
-  )
+  );
 };
 
 export default VisualizeMeasurements;
