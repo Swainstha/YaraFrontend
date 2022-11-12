@@ -8,7 +8,7 @@ import Bargraph from "../components/Bargraph";
 import TimeSeriesgraph from "../components/TimeSeriesGraph";
 import Histogram from "../components/Histogram";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import { MenuItem, FormLabel, Button, FormControl, InputLabel } from "@mui/material";
+import { MenuItem, FormLabel, Button, FormControl, InputLabel, FormControlLabel, RadioGroup,Radio } from "@mui/material";
 //import { Dayjs } from 'dayjs';
 import TextField from '@mui/material/TextField';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -23,23 +23,28 @@ const VisualizeMeasurements: React.FC<{
 
   const [startDate, setStartDate] = React.useState<Moment | null>(null);
   const [endDate, setEndDate] = React.useState<Moment | null>(null);
-  const [parameters, setParameters]= useState<string[]>([]);
+  const [parameters, setParameters]= useState<any>();
   const limits: string[] = ["100", "200", "500", "1000"];
   const [graphData, setGraphData] = useState<any>(null);
-  const [selectedParameter, setSelectedParameter] = useState<string>();
+  const [selectedParameter, setSelectedParameter] = useState<any>('');
   const [measurements, setMeasurements] = useState<any>(null);
   const [selectedLimit, setSelectedLimit] = useState<string>("100");
+  const [graphType, setGraphType] = useState<string>("timeSeries");
+
+  const Graph:any = {"histogram": <Histogram data={graphData} parameter={selectedParameter?selectedParameter:""}/>, 
+                  "timeSeries": <TimeSeriesgraph data={graphData} parameter={selectedParameter?selectedParameter:""}/>}
 
   useEffect(() => {
     if(props.location && Array.isArray(props.location.parameters)) {
-      const params:string[] = [];
+      const params:any = [];
       props.location.parameters.map((param: any) => {
-        params.push(param.parameter)
+        params.push({id:param.parameter, name: param.displayName, unit: param.unit})
       })
       setParameters(params);
-      if(params.length > 0) {
-        setSelectedParameter(params[0]);
-      }
+      //console.log(params)
+      //if(params.length > 0) {
+      //  setSelectedParameter(params[0]);
+      //}
     }
   },[props.location]);
   useEffect(() => {
@@ -48,7 +53,7 @@ const VisualizeMeasurements: React.FC<{
       if(endDate ) {
         end_date = endDate;
       }
-      getMeasurements("DE", props.city, props.location.id, selectedParameter, startDate, end_date, selectedLimit).then(
+      getMeasurements("DE", props.city, props.location.id, selectedParameter.id, startDate, end_date, selectedLimit).then(
         (response) => {
           if (response && response.data) {
             setMeasurements(response.data.results);
@@ -79,6 +84,11 @@ const VisualizeMeasurements: React.FC<{
     setSelectedLimit(event.target.value)
   }
 
+  const handleTypeChange = (event:any) => {
+    setGraphType(event.target.value)
+    //console.log(event.target.value)
+  }
+
   return (
     <>
     <div className="param-container">
@@ -98,10 +108,10 @@ const VisualizeMeasurements: React.FC<{
             style={{width: '100px'}}
           >
           {parameters &&
-            parameters.map((param) => {
+            parameters.map((param:any) => {
               return (
-                <MenuItem key={param} value={param}>
-                  {param.toUpperCase()}
+                <MenuItem key={param.id} value={param}>
+                  {param.name.toUpperCase()}
                 </MenuItem>
               );
             })}
@@ -149,11 +159,23 @@ const VisualizeMeasurements: React.FC<{
             })}
           </Select>  
         </FormControl>
-            
-        
       </div>
-      <div style={{marginTop: '20px'}}>
-        <TimeSeriesgraph data={graphData} />
+      <div style={{display: 'grid', gridTemplateColumns: '80% 20%'}}>
+        {Graph[graphType]}
+        <div>
+          <FormControl>
+            <FormLabel id="demo-controlled-radio-buttons-group">Graph Type</FormLabel>
+            <RadioGroup
+              aria-labelledby="demo-controlled-radio-buttons-group"
+              name="controlled-radio-buttons-group"
+              value={graphType}
+              onChange={handleTypeChange}
+            >
+              <FormControlLabel value="timeSeries" control={<Radio />} label="Time Series" />
+              <FormControlLabel value="histogram" control={<Radio />} label="Histogram" />
+            </RadioGroup>
+          </FormControl>
+        </div>
       </div>
     </>
   );

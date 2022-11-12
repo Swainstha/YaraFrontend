@@ -95,6 +95,7 @@ const MapComponent = () => {
   return (
     <div className="map-container">
       <div className="map-container__left">
+        <p>Country: Germany</p>
       <FormLabel id="demo-radio-buttons-group-label">Cities</FormLabel>
         <div>
         
