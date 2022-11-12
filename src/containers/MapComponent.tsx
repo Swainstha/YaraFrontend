@@ -18,10 +18,10 @@ const MapComponent = () => {
     const [cities, setCities] = useState<string[]>([]);
     const [locations, setLocations] = useState<any>([]);
     const [graphData, setGraphData] = useState<any>(null);
-    const [selectedCity, setSelectedCity] = useState<string|null>(null);
-    const [selectedLocation, setSelectedLocation] = useState<any>(null);
-    const [selectedLocationIndex, setSelectedLocationIndex] = useState<number|null>(null);
-    const [selectedParameter, setSelectedParameter] = useState<string>(parameters[0]);
+    const [selectedCity, setSelectedCity] = useState<string|null>('');
+    const [selectedLocation, setSelectedLocation] = useState<any>('');
+    const [selectedLocationIndex, setSelectedLocationIndex] = useState<number>(0);
+    //const [selectedParameter, setSelectedParameter] = useState<string>(parameters[0]);
     
 
     useLayoutEffect(() => {
@@ -152,7 +152,7 @@ const MapComponent = () => {
 
       </MapContainer>
       <Modal open={isModalOpen} handleClose={handleClose}>
-        <VisualizeMeasurements city={selectedCity} location={selectedLocation}/>
+        <VisualizeMeasurements city={selectedCity} location={selectedLocation} locations={locations}/>
       </Modal>
     </div>
   );

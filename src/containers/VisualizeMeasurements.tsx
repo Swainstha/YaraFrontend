@@ -11,7 +11,6 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { MenuItem, FormLabel, Button, FormControl, InputLabel, FormControlLabel, RadioGroup,Radio } from "@mui/material";
 //import { Dayjs } from 'dayjs';
 import TextField from '@mui/material/TextField';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
@@ -19,6 +18,7 @@ import moment, {Moment} from 'moment';
 const VisualizeMeasurements: React.FC<{
   city: string | null;
   location: any;
+  locations: any
 }> = (props) => {
 
   const [startDate, setStartDate] = React.useState<Moment | null>(null);
@@ -26,13 +26,17 @@ const VisualizeMeasurements: React.FC<{
   const [parameters, setParameters]= useState<any>();
   const limits: string[] = ["100", "200", "500", "1000"];
   const [graphData, setGraphData] = useState<any>(null);
+  const [compGraphData, setCompGraphData] = useState<any>(null);
+
   const [selectedParameter, setSelectedParameter] = useState<any>('');
   const [measurements, setMeasurements] = useState<any>(null);
+  const [compMeasurements, setCompMeasurements] = useState<any>(null);
   const [selectedLimit, setSelectedLimit] = useState<string>("100");
   const [graphType, setGraphType] = useState<string>("timeSeries");
+  const [selectedLocation, setSelectedLocation] = useState<any>('');
 
-  const Graph:any = {"histogram": <Histogram data={graphData} parameter={selectedParameter?selectedParameter:""}/>, 
-                  "timeSeries": <TimeSeriesgraph data={graphData} parameter={selectedParameter?selectedParameter:""}/>}
+  const Graph:any = {"histogram": <Histogram location={props.location} compLocation={selectedLocation} data={graphData} compareData={compGraphData} parameter={selectedParameter?selectedParameter:""}/>, 
+                  "timeSeries": <TimeSeriesgraph location={props.location} compLocation={selectedLocation} data={graphData} compareData={compGraphData} parameter={selectedParameter?selectedParameter:""}/>}
 
   useEffect(() => {
     if(props.location && Array.isArray(props.location.parameters)) {
@@ -55,13 +59,43 @@ const VisualizeMeasurements: React.FC<{
       }
       getMeasurements("DE", props.city, props.location.id, selectedParameter.id, startDate, end_date, selectedLimit).then(
         (response) => {
-          if (response && response.data) {
+          if (response && response.data && Array.isArray(response.data.results)) {
             setMeasurements(response.data.results);
           }
         }
       );
+      if(selectedLocation && selectedLocation !== '') {
+        getMeasurements("DE", props.city, selectedLocation.id, selectedParameter.id, startDate, end_date, selectedLimit).then(
+          (response) => {
+            if (response && response.data && Array.isArray(response.data.results)) {
+              setCompMeasurements(response.data.results);
+            }
+          }
+        );
+      }
     }
   }, [selectedParameter, startDate, endDate, selectedLimit]);
+
+  useEffect(() => {
+    if (selectedParameter && props.city && props.location && startDate && selectedLimit) {
+      let end_date = moment(Date.now());
+      if(endDate ) {
+        end_date = endDate;
+      }
+      if(selectedLocation && selectedLocation !== '') {
+        getMeasurements("DE", props.city, selectedLocation.id, selectedParameter.id, startDate, end_date, selectedLimit).then(
+          (response) => {
+            if (response && response.data && Array.isArray(response.data.results)) {
+              setCompMeasurements(response.data.results);
+            }
+          }
+        );
+      } else {
+        setCompMeasurements(null);
+        setCompGraphData(null);
+      }
+    }
+  }, [selectedLocation]);
 
   useEffect(() => {
     if (measurements && Array.isArray(measurements)) {
@@ -74,7 +108,17 @@ const VisualizeMeasurements: React.FC<{
       //console.log(xData);
       setGraphData({ x: xData, y: yData });
     }
-  }, [measurements]);
+    if(compMeasurements && Array.isArray(compMeasurements)) {
+      const xData: any[] = [];
+      const yData: any[] = [];
+      compMeasurements.map((data: any) => {
+        xData.push(data.date.local);
+        yData.push(data.value);
+      });
+      //console.log(xData);
+      setCompGraphData({ x: xData, y: yData });
+    }
+  }, [measurements, compMeasurements]);
 
   const selectParameter = (event: SelectChangeEvent) => {
     setSelectedParameter(event.target.value);
@@ -89,11 +133,27 @@ const VisualizeMeasurements: React.FC<{
     //console.log(event.target.value)
   }
 
+  const getLocation = (event:any) => {
+    setSelectedLocation(event.target.value);
+  }
+
   return (
     <>
     <div className="param-container">
-      <p>City: {props.city}</p>
-      <p>Location: {props.location?.name}</p>
+      <div className="param-container__child">
+        <p>City: {props.city}</p>
+        <p>Location: {props.location?.name}</p>
+      </div>
+      <div className="param-container__child">
+        <p>Compare Locations</p>
+        <Select className="map-container__left--select" size="small" value={selectedLocation}  onChange={getLocation} label="Locations" style={{minWidth: '200px'}}>
+        <MenuItem key={0} value={''}>{'No Location'}</MenuItem>
+        {props.locations && Array.isArray(props.locations) && props.locations.map((loc:any, index:number) => {
+        
+          return <MenuItem key={loc.id} value={loc}>{loc.name}</MenuItem>
+        })}
+        </Select>
+      </div>
     </div>
     <div className="param-container">
       <FormControl>
