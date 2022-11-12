@@ -4,7 +4,7 @@ import { Moment } from 'moment';
 const headers =  {
     'Content-Type': 'application/json',
   }
-export const getMeasurements = (country: string, city: string, location: string, parameter: string, startDate: Moment|null, endDate: Moment|null, selectedLimit: string) => {
+export const getMeasurements = (country: string, city: string, location: number, parameter: string, startDate: Moment|null, endDate: Moment|null, selectedLimit: string) => {
     const url = 'https://api.openaq.org/v2/measurements';
     return axios.get(`${url}?date_from=${startDate?.toISOString()}&date_to=${endDate?.toISOString()}&limit=${selectedLimit}&page=1&offset=0&sort=desc&parameter=${parameter}&radius=10&country_id=${country}&city=${city}&location_id=${location}&order_by=datetime`, {headers: headers})
 }

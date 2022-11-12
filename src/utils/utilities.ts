@@ -1,7 +1,7 @@
 /**
  * returns time in hour-minute-second format
  * @param   {string} date  - time in string format
- * @return  {string} - returns time in hour-minute-second format
+ * @return  {string} - returns time in hh:mm:ss format
  */
  export const getTimeInFormat = (date: Date) =>
  {
@@ -17,7 +17,7 @@
  /**
   * returns time in year-month-day format
   * @param   {string} date  - date in string/date format
-  * @return  {string} - returns time in year-month-day format
+  * @return  {string} - returns time in yyyy-mm-dd format
   */
  export const getDateInFormat = (date: Date) =>
  {
