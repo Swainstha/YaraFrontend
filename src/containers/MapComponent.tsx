@@ -9,6 +9,7 @@ import VisualizeMeasurements from "./VisualizeMeasurements";
 
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { MenuItem, FormLabel, Button } from "@mui/material";
+import { getTimeInFormat, getDateInFormat } from "../utils/utilities";
 const MapComponent = () => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -39,7 +40,14 @@ const MapComponent = () => {
           markerRef.current = [];
           getLocationsByCity("DE", selectedCity).then(response => {
             const locs = response.data.results.map((location:any) => {
-                return {id: location.id, coordinates: location.coordinates, parameters: location.parameters, name: location.name, city: location.city}
+              let newDate;
+              if(location.lastUpdated) {
+                newDate =  new Date(location.lastUpdated);
+                newDate = getDateInFormat(newDate) + " " + getTimeInFormat(newDate)
+              } else {
+                newDate = ""
+              }
+              return {id: location.id, lastUpdated: newDate, coordinates: location.coordinates, parameters: location.parameters, name: location.name, city: location.city}
             })
             //console.log(locs);
             setLocations(locs);
@@ -137,6 +145,7 @@ const MapComponent = () => {
             return <Marker key={loc.id} ref={(element) => markerRef.current[index] = element} position={[loc.coordinates.latitude, loc.coordinates.longitude]}>
               <Popup>
                 <h3>{loc.name}</h3>
+                <h4>{"Last Updated"}: {loc.lastUpdated}</h4>
                 {
                   Array.isArray(loc.parameters) &&loc.parameters.map((param:any) => {
                     return (
