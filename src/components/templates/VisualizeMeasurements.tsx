@@ -1,3 +1,12 @@
+/**
+ * This is a component where parameters, start date, end date, limit can be chosen along with
+ * other cities for comparision and the data received can be visualized in different graphs
+ * @param {string} props.city- chosen city
+ * @param {LocationModel|null} props.location - location data of the chosen location
+ * @param {LocationModel[]} props.locations - array of locations of the chosen city
+ * @returns {typeof VisualizeMeasurements}
+ */
+
 import React from "react";
 import { useEffect, useState} from "react";
 
@@ -37,6 +46,7 @@ const VisualizeMeasurements: React.FC<{
   const Graph:any = {"histogram": <Histogram location={props.location} compLocation={selectedLocation} data={graphData} compareData={compGraphData} parameter={selectedParameter}/>, 
                   "timeSeries": <TimeSeriesgraph location={props.location} compLocation={selectedLocation} data={graphData} compareData={compGraphData} parameter={selectedParameter}/>}
 
+  //set the available parameters(PM10, PM25, SO2 etc) for a selected location of a city
   useEffect(() => {
     if(props.location && Array.isArray(props.location.parameters)) {
       const params:any = [];
@@ -51,15 +61,19 @@ const VisualizeMeasurements: React.FC<{
     }
   },[props.location]);
 
+  //set the location data given a location id
   useEffect(() => {
     if(selectedLocationId) {
       const loc = props.locations.find(locss => locss.id === parseInt(selectedLocationId));
       if(loc) {
         setSelectedLocation(loc);
       }
+    } else {
+      setSelectedLocation(null);
     }
   },[selectedLocationId]);
 
+  //set the parameter data given a parameter id
   useEffect(() => {
     if(selectedParameterId) {
       const parameter = parameters?.find(param => param.id === selectedParameterId);
@@ -69,9 +83,10 @@ const VisualizeMeasurements: React.FC<{
     }
   },[selectedParameterId])
 
+  //get the measurements for a specific location given start date, parameter and limit
   useEffect(() => {
     if (selectedParameter && props.city && props.location && startDate && selectedLimit) {
-      let parameter = props.location
+      //suppose the end date as now if no end date is provided
       let end_date = moment(Date.now());
       if(endDate ) {
         end_date = endDate;
@@ -95,6 +110,7 @@ const VisualizeMeasurements: React.FC<{
     }
   }, [selectedParameter, startDate, endDate, selectedLimit]);
 
+  //get the measurements for a different location for comparision with the chosen location
   useEffect(() => {
     if (selectedParameter && props.city && props.location && startDate && selectedLimit) {
       let end_date = moment(Date.now());
@@ -115,6 +131,7 @@ const VisualizeMeasurements: React.FC<{
     }
   }, [selectedLocation]);
 
+  //create data for plotting given a set of measurements for a parameter
   const createGraphData = (data:any) => {
     const xData: string[] = [];
     const yData: number[] = [];
@@ -150,6 +167,7 @@ const VisualizeMeasurements: React.FC<{
     }
   }, [measurements, compMeasurements]);*/
 
+
   const selectParameter = (event: SelectChangeEvent) => {
     setSelectedParameterId(event.target.value);
   };
@@ -174,7 +192,7 @@ const VisualizeMeasurements: React.FC<{
           <p>Location: {props.location?.name}</p>
         </div>
         <div className="param-container__child">
-          <p>Compare Locations</p>
+          <p>Compare with Location</p>
           <Select className="param-container__select" size="small" value={selectedLocation?.toString()}  onChange={getLocation} label="Locations">
           <MenuItem key={0} value={''}>{'No Location'}</MenuItem>
           {props.locations && Array.isArray(props.locations) && props.locations.map((loc:LocationModel, index:number) => {

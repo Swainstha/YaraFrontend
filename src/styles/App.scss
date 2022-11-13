@@ -1,5 +1,8 @@
 @import './elements/modal';
 
+@import './modules/histogram';
+@import './modules/timeSeriesGraph';
+
 @import './templates/visualizeMeasurements';
 
 @import './containers/mapComponent';

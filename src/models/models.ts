@@ -23,10 +23,6 @@ export interface HomeCoordModel {
     lng: number
 }
 
-export interface MeasurementModel {
-
-}
-
 export interface GraphDataModel {
     x: string[],
     y: number[]

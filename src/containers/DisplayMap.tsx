@@ -1,3 +1,10 @@
+/**
+ * This is a component to select cities and display the locations of the given city in a map.
+ * Locations of the chosen city can also be selected from the dropdown menu after which a popup
+ * of the chosen location marker is displayed along with the latest values of the different parameters
+ * @returns {typeof DisplayMap}
+ */
+
 import React, { useRef } from "react";
 import {useEffect, useState,useLayoutEffect} from 'react';
 
@@ -13,7 +20,7 @@ import { getTimeInFormat, getDateInFormat } from "../utils/utilities";
 import {getCitiesByCountry, getLocationsByCity} from '../store/openaq';
 import { HomeCoordModel, LocationModel} from "../models/models";
 
-const MapComponent = () => {
+const DisplayMap = () => {
 
   const markerRef:any = useRef([]);
   
@@ -26,6 +33,7 @@ const MapComponent = () => {
   const [selectedLocationIndex, setSelectedLocationIndex] = useState<string>('');
     
 
+  //get the german cities
   useLayoutEffect(() => {
       getCitiesByCountry("DE").then((response) => {
         const cities = response.data.results.map((city: { city: any; }) => {return city.city});
@@ -36,6 +44,8 @@ const MapComponent = () => {
       })
     },[]);
 
+  //get the locations for a selected city along with the latest measurements for 
+  //all the parameters available in that location
   useEffect(() => {
     if(selectedCity) {
       markerRef.current = [];
@@ -63,10 +73,14 @@ const MapComponent = () => {
   const selectCity = (event: SelectChangeEvent) => {
       setSelectedCity(event.target.value);
   }
-  const viewDataByLocation = (location: any) => {
+
+  //open the modal when a marker for a location is selected
+  const viewDataByLocation = (location: LocationModel) => {
     setSelectedLocation(location);
     setIsModalOpen(true);
   }
+
+  //move the map to a different city
   const MapMove:React.FC<{center:HomeCoordModel}>=(props) => {
       const map = useMap();
       map.flyTo(props.center, map.getZoom())
@@ -75,6 +89,8 @@ const MapComponent = () => {
   const handleClose = () => {
     setIsModalOpen(false);
   }
+
+  //move the map to a different location as center when the location is selected in the dropdown
   const OnClickShowMarker:React.FC<{locIndex:number}>= (props) => {
     const map = useMap();
     useEffect(() => {
@@ -87,13 +103,13 @@ const MapComponent = () => {
     return null;
   }
 
+  //open the popup of the selected location marker
   const getLocation = (event:SelectChangeEvent) => {
     const marker:any = markerRef.current[event.target.value];
     setSelectedLocationIndex(event.target.value)
-      console.log("Here", event.target.value)
-      if (marker) {
-          marker.openPopup();
-      }
+    if (marker) {
+        marker.openPopup();
+    }
   }
 
   return (
@@ -159,4 +175,4 @@ const MapComponent = () => {
   );
 };
 
-export default MapComponent;
+export default DisplayMap;

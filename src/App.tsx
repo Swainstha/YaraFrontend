@@ -1,14 +1,14 @@
 /* eslint-disable react/jsx-no-comment-textnodes */
 import React from 'react';
 
-import MapContainer from './containers/MapContainer';
+import DisplayMap from './containers/DisplayMap';
 
 import "./styles/App.scss";
 import './App.css';
 
 const  App = () => {
   return(<div>
-    <MapContainer />
+    <DisplayMap />
     
   </div>)
 }

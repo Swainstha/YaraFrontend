@@ -1,5 +1,5 @@
 import axios from 'axios';
-let url = 'https://api.openaq.org/v2/measurements';
+let url = 'https://api.openaq.org';
 
 export default axios.create({
   baseURL: url,
