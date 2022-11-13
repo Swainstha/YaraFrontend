@@ -1,7 +1,10 @@
-import { Button } from "@mui/material";
 import React from "react";
+
 import Plot from "react-plotly.js";
-const TimeSeriesgraph:React.FC<{data: any, compareData: any, parameter: any, location: any, compLocation: any}>  = (props) => {
+
+import { GraphDataModel, LocationModel, ParameterModel } from '../../models/models';
+
+const TimeSeriesgraph:React.FC<{data: GraphDataModel|null, compareData: GraphDataModel|null, parameter: ParameterModel|null, location: LocationModel|null, compLocation: LocationModel|null}>  = (props) => {
   //console.log(props.data,props.data.x, props.data.y);
   const data: any = [];
   if(props.data && props.data.y && Array.isArray(props.data.y)){

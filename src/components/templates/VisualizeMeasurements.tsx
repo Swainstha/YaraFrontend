@@ -8,11 +8,11 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import moment, {Moment} from 'moment';
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 
-import Histogram from "../components/Histogram";
-import TimeSeriesgraph from "../components/TimeSeriesGraph";
+import Histogram from "../modules/Histogram";
+import TimeSeriesgraph from "../modules/TimeSeriesGraph";
 
-import { getMeasurements} from "../store/openaq";
-import {LocationModel, GraphDataModel, ParameterModel} from '../models/models'
+import { getMeasurements} from "../../store/openaq";
+import {LocationModel, GraphDataModel, ParameterModel} from '../../models/models'
 
 const VisualizeMeasurements: React.FC<{
   city: string;
@@ -34,8 +34,8 @@ const VisualizeMeasurements: React.FC<{
   const [selectedParameterId, setSelectedParameterId] = useState<string>('');
   const [startDate, setStartDate] = React.useState<Moment | null>(null);
 
-  const Graph:any = {"histogram": <Histogram location={props.location} compLocation={selectedLocation} data={graphData} compareData={compGraphData} parameter={selectedParameter?selectedParameter:""}/>, 
-                  "timeSeries": <TimeSeriesgraph location={props.location} compLocation={selectedLocation} data={graphData} compareData={compGraphData} parameter={selectedParameter?selectedParameter:""}/>}
+  const Graph:any = {"histogram": <Histogram location={props.location} compLocation={selectedLocation} data={graphData} compareData={compGraphData} parameter={selectedParameter}/>, 
+                  "timeSeries": <TimeSeriesgraph location={props.location} compLocation={selectedLocation} data={graphData} compareData={compGraphData} parameter={selectedParameter}/>}
 
   useEffect(() => {
     if(props.location && Array.isArray(props.location.parameters)) {
@@ -168,33 +168,33 @@ const VisualizeMeasurements: React.FC<{
 
   return (
     <>
-    <div className="param-container">
-      <div className="param-container__child">
-        <p>City: {props.city}</p>
-        <p>Location: {props.location?.name}</p>
+      <div className="param-container">
+        <div className="param-container__child">
+          <p>City: {props.city}</p>
+          <p>Location: {props.location?.name}</p>
+        </div>
+        <div className="param-container__child">
+          <p>Compare Locations</p>
+          <Select className="param-container__select" size="small" value={selectedLocation?.toString()}  onChange={getLocation} label="Locations">
+          <MenuItem key={0} value={''}>{'No Location'}</MenuItem>
+          {props.locations && Array.isArray(props.locations) && props.locations.map((loc:LocationModel, index:number) => {
+          
+            return <MenuItem key={loc.id} value={loc.id}>{loc.name}</MenuItem>
+          })}
+          </Select>
+        </div>
       </div>
-      <div className="param-container__child">
-        <p>Compare Locations</p>
-        <Select className="map-container__left--select" size="small" value={selectedLocation?.toString()}  onChange={getLocation} label="Locations" style={{minWidth: '200px'}}>
-        <MenuItem key={0} value={''}>{'No Location'}</MenuItem>
-        {props.locations && Array.isArray(props.locations) && props.locations.map((loc:LocationModel, index:number) => {
-        
-          return <MenuItem key={loc.id} value={loc.id}>{loc.name}</MenuItem>
-        })}
-        </Select>
-      </div>
-    </div>
-    <div className="param-container">
-      <FormControl>
-        <InputLabel id="demo-simple-select-label">Parameter</InputLabel>
+      <div className="param-container">
+        <FormControl>
+          <InputLabel id="parameter">Parameter</InputLabel>
           <Select
             id="parameters"
             value={selectedParameterId}
             label="Parameters"
             onChange={selectParameter}
             size="small"
-            className="map-container__left--select"
-            style={{width: '100px'}}
+            className="param-container__select"
+
           >
           {parameters &&
             parameters.map((param:ParameterModel) => {
@@ -228,15 +228,14 @@ const VisualizeMeasurements: React.FC<{
           />
         </LocalizationProvider>
         <FormControl>
-        <InputLabel id="demo-simple-select-label">Limits</InputLabel>
+          <InputLabel id="limits">Limits</InputLabel>
           <Select
             id="limits"
             value={selectedLimit}
             label="Limits"
             onChange={selectLimit}
             size="small"
-            className="map-container__left--select"
-            style={{width: '100px'}}
+            className="param-container__select"
           >
           {limits &&
             limits.map((limit) => {
@@ -249,14 +248,13 @@ const VisualizeMeasurements: React.FC<{
           </Select>  
         </FormControl>
       </div>
-      <div style={{display: 'grid', gridTemplateColumns: '80% 20%'}}>
+      <div className="graph-container">
         {Graph[graphType]}
         <div>
           <FormControl>
-            <FormLabel id="demo-controlled-radio-buttons-group">Graph Type</FormLabel>
+            <FormLabel id="graphs-type-labels">Graph Type</FormLabel>
             <RadioGroup
-              aria-labelledby="demo-controlled-radio-buttons-group"
-              name="controlled-radio-buttons-group"
+              name="graphs"
               value={graphType}
               onChange={handleTypeChange}
             >

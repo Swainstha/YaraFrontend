@@ -2,7 +2,7 @@
 
  import Modal from "@mui/material/Modal";
 //import './Modal.css';
- const ModalComp:React.FC<{children: any, handleClose: any, open: boolean}> = (props) =>
+ const ModalComp:React.FC<{children: any, handleClose: () => void, open: boolean}> = (props) =>
  {
    const { children, handleClose, open} = props;
    return (

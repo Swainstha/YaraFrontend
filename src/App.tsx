@@ -1,17 +1,14 @@
 /* eslint-disable react/jsx-no-comment-textnodes */
 import React from 'react';
-import logo from './logo.svg';
+
+import MapContainer from './containers/MapContainer';
+
+import "./styles/App.scss";
 import './App.css';
 
-
-import LatestMeasurements from './containers/LatestMeasurements';
-import VisualizeMeasurements from './containers/VisualizeMeasurements';
-import MapComponent from './containers/MapComponent';
-import Test from './containers/Test'
-import "./styles/App.scss"
 const  App = () => {
   return(<div>
-    <MapComponent />
+    <MapContainer />
     
   </div>)
 }

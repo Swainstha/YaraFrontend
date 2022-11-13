@@ -3,7 +3,7 @@
     flex-direction: row;
     column-gap: 20px;
     justify-content: space-between;
-    //margin-bottom: 10px;
+    margin-bottom: 10px;
 
     &__child {
         display: flex;
@@ -15,4 +15,14 @@
         margin-top: 0px
     }
 
+    &__select {
+        color:black;
+        min-width: 150px;
+    }
+
+}
+
+.graph-container {
+    display: grid;
+    grid-template-columns: 80% 20%
 }

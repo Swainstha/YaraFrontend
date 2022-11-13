@@ -5,13 +5,13 @@ import { MapContainer, TileLayer, useMap, Marker, Popup } from "react-leaflet";
 import { Button, FormLabel, MenuItem} from "@mui/material";
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 
-import Modal from "../components/Modal";
-import VisualizeMeasurements from "./VisualizeMeasurements";
+import Modal from "../components/elements/Modal";
+import VisualizeMeasurements from "../components/templates/VisualizeMeasurements";
 
 import { getTimeInFormat, getDateInFormat } from "../utils/utilities";
 
 import {getCitiesByCountry, getLocationsByCity} from '../store/openaq';
-import { HomeCoordModel, LocationModel, ParameterModel } from "../models/models";
+import { HomeCoordModel, LocationModel} from "../models/models";
 
 const MapComponent = () => {
 
@@ -109,16 +109,15 @@ const MapComponent = () => {
             onChange={selectCity}
             size="small"
             className="map-container__left--select"
-            style={{minWidth: '200px'}}
           >
             {cities && cities.map(city => {
               return <MenuItem key={city} value={city}>{city}</MenuItem>
             })}
           </Select>
         </div>
-        <FormLabel id="demo-radio-buttons-group-label">Locations</FormLabel>
+        <FormLabel id="locations">Locations</FormLabel>
         <div>
-          <Select className="map-container__left--select" size="small" value={selectedLocationIndex}  onChange={getLocation} label="Locations" style={{minWidth: '200px'}}>
+          <Select className="map-container__left--select" size="small" value={selectedLocationIndex}  onChange={getLocation} label="Locations">
             {locations && locations.map((loc:LocationModel, index:number) => {
             
               return <MenuItem key={loc.id} value={index.toString()}>{loc.name}</MenuItem>
