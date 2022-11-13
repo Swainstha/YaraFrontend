@@ -20,7 +20,7 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import Histogram from "../modules/Histogram";
 import TimeSeriesgraph from "../modules/TimeSeriesGraph";
 
-import { getMeasurements} from "../../store/openaq";
+import { getMeasurements} from "../../services/openaq";
 import {LocationModel, GraphDataModel, ParameterModel} from '../../models/models'
 
 const VisualizeMeasurements: React.FC<{

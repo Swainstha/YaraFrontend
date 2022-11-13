@@ -17,7 +17,7 @@ import VisualizeMeasurements from "../components/templates/VisualizeMeasurements
 
 import { getTimeInFormat, getDateInFormat } from "../utils/utilities";
 
-import {getCitiesByCountry, getLocationsByCity} from '../store/openaq';
+import {getCitiesByCountry, getLocationsByCity} from '../services/openaq';
 import { HomeCoordModel, LocationModel} from "../models/models";
 
 const DisplayMap = () => {
