@@ -17,6 +17,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import moment, {Moment} from 'moment';
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 
+import DataAnalysis from '../modules/DataAnalysis';
 import Histogram from "../modules/Histogram";
 import TimeSeriesgraph from "../modules/TimeSeriesGraph";
 
@@ -280,6 +281,8 @@ const VisualizeMeasurements: React.FC<{
               <FormControlLabel value="histogram" control={<Radio />} label="Histogram" />
             </RadioGroup>
           </FormControl>
+          <DataAnalysis location={props.location} compLocation={selectedLocation} data={graphData} compareData={compGraphData} parameter={selectedParameter} />
+
         </div>
       </div>
     </>

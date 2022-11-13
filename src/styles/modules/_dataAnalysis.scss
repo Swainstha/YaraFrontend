@@ -1,0 +1,12 @@
+.data-analysis {
+    margin-top: 10px;
+
+    &__child {
+        margin-bottom: 10px;
+        p {
+            margin: 0 0 2px;
+            font-size: 0.8rem;
+        }
+        
+    }
+}

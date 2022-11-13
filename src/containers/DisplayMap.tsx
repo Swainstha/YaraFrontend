@@ -9,7 +9,7 @@ import React, { useRef } from "react";
 import {useEffect, useState,useLayoutEffect} from 'react';
 
 import { MapContainer, TileLayer, useMap, Marker, Popup } from "react-leaflet";
-import { Button, FormLabel, MenuItem} from "@mui/material";
+import { Button, FormLabel, MenuItem, Grid, FormControl, InputLabel} from "@mui/material";
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 import Modal from "../components/elements/Modal";
@@ -113,35 +113,46 @@ const DisplayMap = () => {
   }
 
   return (
-    <div className="map-container">
-      <div className="map-container__left">
-        <p>Country: Germany</p>
-        <FormLabel >Cities</FormLabel>
-        <div>
+    <Grid container>
+      <Grid item xs={12} sm={12} md={3} lg={3} >
+        <Grid container className="left">
+        <Grid item xs={12} sm={3} md={12} lg={12}>
+          <p>Country: Germany</p>
+        </Grid>
+        <Grid item xs={12} sm={5} md={12} lg={12}  className="left__grid">
+          <FormControl>
+            <InputLabel id="cities-id-label">Cities</InputLabel>
           <Select
+            labelId="cities-id-label"
             id="cities"
             value={selectedCity}
             label="Cities"
             onChange={selectCity}
             size="small"
-            className="map-container__left--select"
+            className="left__select"
+            
           >
             {cities && cities.map(city => {
               return <MenuItem key={city} value={city}>{city}</MenuItem>
             })}
           </Select>
-        </div>
-        <FormLabel id="locations">Locations</FormLabel>
-        <div>
-          <Select className="map-container__left--select" size="small" value={selectedLocationIndex}  onChange={getLocation} label="Locations">
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} sm={4} md={12} lg={12} className="left__grid">
+        <FormControl>
+            <InputLabel id="locations-id-label">Locations</InputLabel>
+          <Select className="left__select" labelId="locations-id-label" size="small" value={selectedLocationIndex}  onChange={getLocation} label="Locations">
             {locations && locations.map((loc:LocationModel, index:number) => {
             
               return <MenuItem key={loc.id} value={index.toString()}>{loc.name}</MenuItem>
             })}
           </Select>
-        </div>
-      </div>
-      <MapContainer center={[home.lat, home.lng]} zoom={8} scrollWheelZoom={false} className="map-container__right">
+        </FormControl>
+        </Grid>
+      </Grid>
+      </Grid>
+      <Grid item xs={12} sm={12} md={9} lg={9}>
+      <MapContainer center={[home.lat, home.lng]} zoom={8} scrollWheelZoom={false} className="right">
         <MapMove center={home} />
         {selectedCity && selectedLocationIndex !== "" && <OnClickShowMarker locIndex={parseInt(selectedLocationIndex)}/>}
       
@@ -168,10 +179,11 @@ const DisplayMap = () => {
         })}
 
       </MapContainer>
+      </Grid>
       <Modal open={isModalOpen} handleClose={handleClose}>
         <VisualizeMeasurements city={selectedCity} location={selectedLocation} locations={locations}/>
       </Modal>
-    </div>
+    </Grid>
   );
 };
 
