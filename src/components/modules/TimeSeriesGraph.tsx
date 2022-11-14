@@ -51,7 +51,7 @@ const TimeSeriesGraph:React.FC<{data: GraphDataModel|null, compareData: GraphDat
         data={data}
         divId="plotlyChart"
         layout={{autosize: true, width: size, yaxis: {title: `${props.parameter?.name.toUpperCase()} in ${props.parameter?.unit}`}, title: `Plot of ${props.parameter?.name.toUpperCase()} in ${props.parameter?.unit} vs Date` }}
-      />:<p>No Data is available</p>}
+      />:props.parameter?<p>No Data is available</p>:<p>Start by choosing a parameter and  a start date</p>}
     </div>
   );
 };

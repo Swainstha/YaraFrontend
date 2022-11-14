@@ -54,7 +54,7 @@ const Histogram:React.FC<{compareData: GraphDataModel|null, compLocation: Locati
           data={data}
           
           layout={{ barmode: "overlay", width: size, title: `Histogram of ${props.parameter?.name.toUpperCase()}`, xaxis:{title: `Values of ${props.parameter?.name.toUpperCase()}`}, yaxis: {title:"Frequency"}}}
-        />:<p>No Data is available</p>}
+        />:props.parameter?<p>No Data is available</p>:<p>Start by choosing a parameter and a start date</p>}
       </div>
     );
   };

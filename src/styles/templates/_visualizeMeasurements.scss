@@ -35,6 +35,15 @@
     float: right;
 }
 
+.circular-progress {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+
+}
+
 @media only screen and (max-width: theme.$screen-lg-max) {
     .param-container {
         &__select {

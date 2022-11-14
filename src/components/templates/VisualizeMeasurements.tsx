@@ -11,19 +11,22 @@ import React from "react";
 import { useEffect, useState} from "react";
 
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
-import { Grid, MenuItem, FormControl, InputLabel, TextField, IconButton } from "@mui/material";
+import {CircularProgress, Grid, MenuItem, FormControl, InputLabel, TextField, IconButton } from "@mui/material";
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import moment, {Moment} from 'moment';
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import CloseIcon from '@mui/icons-material/Close';
+import {NotificationContainer, NotificationManager} from 'react-notifications';
 
 import DataAnalysis from '../modules/DataAnalysis';
 import Histogram from "../modules/Histogram";
 import TimeSeriesgraph from "../modules/TimeSeriesGraph";
 
 import { getMeasurements} from "../../services/openaq";
-import {LocationModel, GraphDataModel, ParameterModel} from '../../models/models'
+import {LocationModel, GraphDataModel, ParameterModel} from '../../models/models';
+
+import 'react-notifications/lib/notifications.css';
 
 const VisualizeMeasurements: React.FC<{
   city: string;
@@ -38,6 +41,7 @@ const VisualizeMeasurements: React.FC<{
   const [endDate, setEndDate] = React.useState<Moment | null>(null);
   const [graphData, setGraphData] = useState<GraphDataModel|null>(null);
   const [graphType, setGraphType] = useState<string>("timeSeries");
+  const [loading, setLoading] = useState<boolean>(false);
   const [parameters, setParameters]= useState<ParameterModel[]|null>(null);
   const [selectedLimit, setSelectedLimit] = useState<string>("100");
   const [selectedLocation, setSelectedLocation] = useState<LocationModel|null>(null);
@@ -94,11 +98,13 @@ const VisualizeMeasurements: React.FC<{
       if(endDate ) {
         end_date = endDate;
       }
+      setLoading(true);
       getMeasurements("DE", props.city, props.location.id, selectedParameter.id, startDate, end_date, selectedLimit).then(
         (response) => {
           if (response && response.data && Array.isArray(response.data.results)) {
             setGraphData(createGraphData(response.data.results));
           }
+          setLoading(false);
         }
       );
       if(selectedLocation) {
@@ -106,6 +112,9 @@ const VisualizeMeasurements: React.FC<{
           (response) => {
             if (response && response.data && Array.isArray(response.data.results)) {
               setCompGraphData(createGraphData(response.data.results));
+              if(response.data.results.length === 0){
+                NotificationManager.info(`Data is not available for ${selectedParameter.name} for location ${selectedLocation.name}`);
+              }
             }
           }
         );
@@ -125,6 +134,9 @@ const VisualizeMeasurements: React.FC<{
           (response) => {
             if (response && response.data && Array.isArray(response.data.results)) {
               setCompGraphData(createGraphData(response.data.results));
+              if(response.data.results.length === 0){
+                NotificationManager.info(`Data is not available for ${selectedParameter.name} for location ${selectedLocation.name}`);
+              }
             }
           }
         );
@@ -270,12 +282,13 @@ const VisualizeMeasurements: React.FC<{
       </div>
       <Grid container>
         <Grid item xs={12} sm={12} md={9} lg={9}>
-          {Graph[graphType]}
+          {loading?<div className="circular-progress"><CircularProgress/></div>:Graph[graphType]}
         </Grid>
         <Grid item xs={12} sm={12} md={3} lg={3}>
           <DataAnalysis location={props.location} compLocation={selectedLocation} data={graphData} compareData={compGraphData} parameter={selectedParameter} />
         </Grid>
       </Grid>
+      <NotificationContainer/>
     </>
   );
 };
