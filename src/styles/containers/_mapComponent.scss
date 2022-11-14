@@ -12,7 +12,8 @@
 
     &__select {
         color:black;
-        min-width: 200px;
+        max-width: 150px;
+        min-width: 130px;
     }
 }
 .right {
@@ -45,6 +46,8 @@
     .left {
          &__select {
             margin-bottom: 0px;
+            max-width: 150px;
+            min-width: 130px;
         }
     }
 }

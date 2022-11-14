@@ -11,11 +11,12 @@ import React from "react";
 import { useEffect, useState} from "react";
 
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
-import { MenuItem, FormLabel, FormControl, InputLabel, FormControlLabel, RadioGroup,Radio, TextField } from "@mui/material";
+import { Grid, MenuItem, FormControl, InputLabel, TextField, IconButton } from "@mui/material";
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import moment, {Moment} from 'moment';
 import Select, { SelectChangeEvent } from "@mui/material/Select";
+import CloseIcon from '@mui/icons-material/Close';
 
 import DataAnalysis from '../modules/DataAnalysis';
 import Histogram from "../modules/Histogram";
@@ -26,6 +27,7 @@ import {LocationModel, GraphDataModel, ParameterModel} from '../../models/models
 
 const VisualizeMeasurements: React.FC<{
   city: string;
+  handleClose: () => void;
   location: LocationModel|null;
   locations: LocationModel[]
 }> = (props) => {
@@ -145,30 +147,6 @@ const VisualizeMeasurements: React.FC<{
     return({ x: xData, y: yData });
   }
 
-  /*useEffect(() => {
-    if (measurements && Array.isArray(measurements)) {
-      const xData: any[] = [];
-      const yData: any[] = [];
-      measurements.map((data: any) => {
-        xData.push(data.date.local);
-        yData.push(data.value);
-      });
-      //console.log(xData);
-      setGraphData({ x: xData, y: yData });
-    }
-    if(compMeasurements && Array.isArray(compMeasurements)) {
-      const xData: any[] = [];
-      const yData: any[] = [];
-      compMeasurements.map((data: any) => {
-        xData.push(data.date.local);
-        yData.push(data.value);
-      });
-      //console.log(xData);
-      setCompGraphData({ x: xData, y: yData });
-    }
-  }, [measurements, compMeasurements]);*/
-
-
   const selectParameter = (event: SelectChangeEvent) => {
     setSelectedParameterId(event.target.value);
   };
@@ -187,24 +165,31 @@ const VisualizeMeasurements: React.FC<{
 
   return (
     <>
+      <div className="close">
+      <IconButton onClick={props.handleClose}>
+            <CloseIcon />
+        </IconButton>
+      </div>
       <div className="param-container">
         <div className="param-container__child">
           <p>City: {props.city}</p>
           <p>Location: {props.location?.name}</p>
         </div>
         <div className="param-container__child">
-          <p>Compare with Location</p>
-          <Select className="param-container__select" size="small" value={selectedLocation?.toString()}  onChange={getLocation} label="Locations">
+        <FormControl size="small">
+          <InputLabel id="compare">Compare with</InputLabel>
+          <Select labelId="compare" className="param-container__compare" size="small" value={selectedLocationId}  onChange={getLocation} label="Locations">
           <MenuItem key={0} value={''}>{'No Location'}</MenuItem>
           {props.locations && Array.isArray(props.locations) && props.locations.map((loc:LocationModel, index:number) => {
           
             return <MenuItem key={loc.id} value={loc.id}>{loc.name}</MenuItem>
           })}
           </Select>
+          </FormControl>
         </div>
       </div>
       <div className="param-container">
-        <FormControl>
+        <FormControl size="small">
           <InputLabel id="parameter">Parameter</InputLabel>
           <Select
             id="parameters"
@@ -234,7 +219,8 @@ const VisualizeMeasurements: React.FC<{
             onChange={(newValue) => {
               setStartDate(newValue);
             }}
-            renderInput={(params) => <TextField size="small" {...params} />}
+            className="param-container__select"
+            renderInput={(params) => <TextField className="param-container__select" size="small" {...params} />}
           />
           <DatePicker
             label="End Date"
@@ -243,7 +229,8 @@ const VisualizeMeasurements: React.FC<{
             onChange={(newValue) => {
               setEndDate(newValue);
             }}
-            renderInput={(params) => <TextField size="small" {...params} />}
+            className="param-container__select"
+            renderInput={(params) => <TextField className="param-container__select" size="small" {...params} />}
           />
         </LocalizationProvider>
         <FormControl>
@@ -266,25 +253,29 @@ const VisualizeMeasurements: React.FC<{
             })}
           </Select>  
         </FormControl>
-      </div>
-      <div className="graph-container">
-        {Graph[graphType]}
-        <div>
-          <FormControl>
-            <FormLabel id="graphs-type-labels">Graph Type</FormLabel>
-            <RadioGroup
-              name="graphs"
+        <FormControl>
+            <InputLabel id="graphType">GraphType</InputLabel>
+            <Select
+              label-id="graphType"
               value={graphType}
+              label="Graph Type"
               onChange={handleTypeChange}
+              size="small"
+              className="param-container__select"
             >
-              <FormControlLabel value="timeSeries" control={<Radio />} label="Time Series" />
-              <FormControlLabel value="histogram" control={<Radio />} label="Histogram" />
-            </RadioGroup>
+              <MenuItem key={"timeSeries"} value={"timeSeries"}>Time Series</MenuItem>
+              <MenuItem key={"histogram"} value={"histogram"}>Histogram</MenuItem>
+            </Select>
           </FormControl>
-          <DataAnalysis location={props.location} compLocation={selectedLocation} data={graphData} compareData={compGraphData} parameter={selectedParameter} />
-
-        </div>
       </div>
+      <Grid container>
+        <Grid item xs={12} sm={12} md={9} lg={9}>
+          {Graph[graphType]}
+        </Grid>
+        <Grid item xs={12} sm={12} md={3} lg={3}>
+          <DataAnalysis location={props.location} compLocation={selectedLocation} data={graphData} compareData={compGraphData} parameter={selectedParameter} />
+        </Grid>
+      </Grid>
     </>
   );
 };

@@ -1,3 +1,4 @@
+@use "../library" as theme;
 .data-analysis {
     margin-top: 10px;
 
@@ -8,5 +9,24 @@
             font-size: 0.8rem;
         }
         
+    }
+}
+
+.data-color {
+    
+    color: theme.$green;
+}
+
+.comp-data-color {
+    color: theme.$red;
+}
+
+@media only screen and (max-width: theme.$screen-sm-max) {
+    .data-analysis {
+        padding: 10px 10px 0px;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        column-gap: 30px;
     }
 }

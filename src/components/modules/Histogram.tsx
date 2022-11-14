@@ -8,13 +8,36 @@
  * @returns {typeof Histogram}
  */
 
-import React from 'react';
+import React,{useState, useEffect} from 'react';
 
 import Plot from "react-plotly.js";
+
+import useWindowDimensions from "../../hooks/useWindowDimensions";
 
 import { GraphDataModel, LocationModel, ParameterModel } from '../../models/models';
 
 const Histogram:React.FC<{compareData: GraphDataModel|null, compLocation: LocationModel|null, data: GraphDataModel|null,  location: LocationModel|null,parameter: ParameterModel|null}>  = (props) => {
+  
+  const { height, width } = useWindowDimensions();
+
+  const [size, setSize] = useState<number|undefined>();
+
+  useEffect(() => {
+    let newWidth = (width*4)/5;
+    if(width > 1500) {
+      newWidth = (width *1.5)/5;
+      
+    } else if(width > 1200) {
+      newWidth = (width *2.5)/5;
+      
+    } else if(width > 900) {
+      newWidth = (width * 3)/5;
+    } else {
+      newWidth = (width*4)/5;
+    }
+    setSize(newWidth);
+  },[width]);
+
     const data: any = [];
     if(props.data && props.data.y && Array.isArray(props.data.y)){
       data.push({type: "histogram", name: props.location?.name, x: props.data.y, opacity: 0.6,marker: {color: 'green'}})
@@ -26,10 +49,11 @@ const Histogram:React.FC<{compareData: GraphDataModel|null, compLocation: Locati
 
     return (
       <div className="hist-container">
-        {props.data && Array.isArray(props.data.y) && props.data.y.length > 0 ?<Plot
+        {props.data && size && Array.isArray(props.data.y) && props.data.y.length > 0 ?<Plot
           className="plot"
           data={data}
-          layout={{ barmode: "overlay",width: 600, height: 400, title: `Histogram of ${props.parameter?.name.toUpperCase()}`, xaxis:{title: `Values of ${props.parameter?.name.toUpperCase()}`}, yaxis: {title:"Frequency"}}}
+          
+          layout={{ barmode: "overlay", width: size, title: `Histogram of ${props.parameter?.name.toUpperCase()}`, xaxis:{title: `Values of ${props.parameter?.name.toUpperCase()}`}, yaxis: {title:"Frequency"}}}
         />:<p>No Data is available</p>}
       </div>
     );

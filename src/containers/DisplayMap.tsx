@@ -114,12 +114,12 @@ const DisplayMap = () => {
 
   return (
     <Grid container>
-      <Grid item xs={12} sm={12} md={3} lg={3} >
+      <Grid item xs={12} sm={12} md={2} lg={2} >
         <Grid container className="left">
         <Grid item xs={12} sm={3} md={12} lg={12}>
           <p>Country: Germany</p>
         </Grid>
-        <Grid item xs={12} sm={5} md={12} lg={12}  className="left__grid">
+        <Grid item xs={6} sm={5} md={12} lg={12}  className="left__grid">
           <FormControl>
             <InputLabel id="cities-id-label">Cities</InputLabel>
           <Select
@@ -138,7 +138,7 @@ const DisplayMap = () => {
           </Select>
           </FormControl>
         </Grid>
-        <Grid item xs={12} sm={4} md={12} lg={12} className="left__grid">
+        <Grid item xs={6} sm={4} md={12} lg={12} className="left__grid">
         <FormControl>
             <InputLabel id="locations-id-label">Locations</InputLabel>
           <Select className="left__select" labelId="locations-id-label" size="small" value={selectedLocationIndex}  onChange={getLocation} label="Locations">
@@ -151,7 +151,7 @@ const DisplayMap = () => {
         </Grid>
       </Grid>
       </Grid>
-      <Grid item xs={12} sm={12} md={9} lg={9}>
+      <Grid item xs={12} sm={12} md={10} lg={10}>
       <MapContainer center={[home.lat, home.lng]} zoom={8} scrollWheelZoom={false} className="right">
         <MapMove center={home} />
         {selectedCity && selectedLocationIndex !== "" && <OnClickShowMarker locIndex={parseInt(selectedLocationIndex)}/>}
@@ -181,7 +181,7 @@ const DisplayMap = () => {
       </MapContainer>
       </Grid>
       <Modal open={isModalOpen} handleClose={handleClose}>
-        <VisualizeMeasurements city={selectedCity} location={selectedLocation} locations={locations}/>
+        <VisualizeMeasurements handleClose={handleClose} city={selectedCity} location={selectedLocation} locations={locations}/>
       </Modal>
     </Grid>
   );

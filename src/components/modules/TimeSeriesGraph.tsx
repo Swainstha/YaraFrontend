@@ -8,13 +8,34 @@
  * @returns {typeof TimeSeriesGraph}
  */
 
-import React from "react";
+import { Plots } from "plotly.js";
+import React,{useEffect, useState} from "react";
 
 import Plot from "react-plotly.js";
 
+import useWindowDimensions from "../../hooks/useWindowDimensions";
 import { GraphDataModel, LocationModel, ParameterModel } from '../../models/models';
 
 const TimeSeriesGraph:React.FC<{data: GraphDataModel|null, compareData: GraphDataModel|null, parameter: ParameterModel|null, location: LocationModel|null, compLocation: LocationModel|null}>  = (props) => {
+  const { height, width } = useWindowDimensions();
+
+  const [size, setSize] = useState<number|undefined>();
+
+  useEffect(() => {
+    let newWidth = (width*4)/5;
+    if(width > 1500) {
+      newWidth = (width *1.5)/5;
+      
+    } else if(width > 1200) {
+      newWidth = (width *2.5)/5;
+      
+    } else if(width > 900) {
+      newWidth = (width * 3)/5;
+    } else {
+      newWidth = (width*4)/5;
+    }
+    setSize(newWidth);
+  },[width]);
   const data: any = [];
   if(props.data && props.data.y && Array.isArray(props.data.y)){
     data.push({type: "scatter", mode:"lines", name: props.location?.name, x: props.data.x, y: props.data.y, opacity: 0.6,line: {color: 'green'}})
@@ -28,7 +49,8 @@ const TimeSeriesGraph:React.FC<{data: GraphDataModel|null, compareData: GraphDat
     <div className="time-series-container">
       {props.data && Array.isArray(props.data.y) && props.data.y.length > 0 ?<Plot
         data={data}
-        layout={{ width: 600, height: 400,yaxis: {title: `${props.parameter?.name.toUpperCase()} in ${props.parameter?.unit}`}, title: `Plot of ${props.parameter?.name.toUpperCase()} in ${props.parameter?.unit} vs Date` }}
+        divId="plotlyChart"
+        layout={{autosize: true, width: size, yaxis: {title: `${props.parameter?.name.toUpperCase()} in ${props.parameter?.unit}`}, title: `Plot of ${props.parameter?.name.toUpperCase()} in ${props.parameter?.unit} vs Date` }}
       />:<p>No Data is available</p>}
     </div>
   );
